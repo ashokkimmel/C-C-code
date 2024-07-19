@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+
+char* encrypt(char ogmessage[], int key[], int oml, int keylen) {
+    int sml = oml/keylen; //small
+    sml++;
+    int ml = sml * keylen;
+    int lstn[ml]; // list of numbers
+    int lstni = 0; // list of numbers incrementor
+    for (;lstni < oml; lstni++) {
+        lstn[lstni] = (int)ogmessage[lstni];
+    }
+    for(;lstni < ml; lstni++) {
+        lstn[lstni] = 32;
+    }
+    
+    int lsten[ml];//list of encoded numbers
+    
+    for(int i = 0; i < sml; i++) {
+        for(int j = 0; j < keylen; j++) {
+            int product = 0;
+            for(int k = 0; k < keylen; k++) {
+                product += key[k * keylen + j] * lstn[i * keylen + k]; 
+            }
+            lsten[i * keylen + j] = product;
+        }
+        
+    }
+    char* finalstr = malloc(sizeof(char) * ml*4);
+//    char lststr[ml][4];
+    int fmc = 0; //final character amount
+    for(int i = 0; i < ml; i++) {
+        int cel = lsten[i];//curent element
+//        int bn = 0; //byte number
+        while(0 != cel) {
+//            lststr[i][bn] = (cel % 94) + 33;
+//            bn++;
+            finalstr[fmc] = (cel % 94) + 33;
+            cel = cel/94;
+            fmc++;
+        }
+//        lststr[i][bn] = '\0';
+        finalstr[fmc] = ' ';
+        fmc++;
+    }
+    fmc--;
+    finalstr[fmc] = '\0';
+    fmc++;
+    finalstr = realloc(finalstr, fmc);
+    printf("%d\n", sizeof(finalstr));
+    printf("%d\n", fmc);
+    retaurn finalstr;
+}
+
+int main() {
+    int key[4] = {2, 3, 1, 2};
+    int key[4] = {2, -3, -1, 2};
+    char msg[] = "Hello Jamesma";
+    char* encodedmsg;
+    encodedmsg = encrypt(msg, key, sizeof(msg), sqrt(sizeof(key)/4));
+    printf("%s", encodedmsg);
+    return 0;
+}
